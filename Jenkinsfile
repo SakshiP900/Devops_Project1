@@ -15,30 +15,29 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'python3 -m venv venv'
-                sh './venv/bin/pip install -r requirements.txt'
+                bat 'python -m venv venv'
+                bat '.\\venv\\Scripts\\pip install -r requirements.txt'
             }
         }
 
         stage('Test') {
             steps {
-                sh './venv/bin/pytest test_app.py'
+                bat '.\\venv\\Scripts\\pytest test_app.py'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $DOCKER_IMAGE .'
+                bat 'docker build -t my-python-app:latest .'
             }
         }
 
         stage('Deploy') {
             steps {
-                // Example: running Docker container
-                sh '''
-                docker stop my-python-app || true
-                docker rm my-python-app || true
-                docker run -d -p 5000:5000 --name my-python-app $DOCKER_IMAGE
+                bat '''
+                docker stop my-python-app || exit 0
+                docker rm my-python-app || exit 0
+                docker run -d -p 5000:5000 --name my-python-app %DOCKER_IMAGE%
                 '''
             }
         }
@@ -50,4 +49,3 @@ pipeline {
         }
     }
 }
-
