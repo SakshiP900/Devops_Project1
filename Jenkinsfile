@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/<your-username>/my-python-app.git'
+                git branch: 'main', url: 'https://github.com/SakshiP900/Devops_Project1.git'
             }
         }
 
