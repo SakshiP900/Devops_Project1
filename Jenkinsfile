@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        APP_NAME = "my-python-app"
-        DOCKER_IMAGE = "my-python-app:latest"
+        APP_NAME = "my-java-app"
+        DOCKER_IMAGE = "my-java-app:latest"
     }
 
     stages {
@@ -13,31 +13,24 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Build with Maven') {
             steps {
-                bat 'python -m venv venv'
-                bat '.\\venv\\Scripts\\pip install -r requirements.txt'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                bat '.\\venv\\Scripts\\pytest test_app.py'
+                bat 'mvn clean package -DskipTests'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t my-python-app:latest .'
+                bat 'docker build -t my-java-app:latest .'
             }
         }
 
         stage('Deploy') {
             steps {
                 bat '''
-                docker stop my-python-app || exit 0
-                docker rm my-python-app || exit 0
-                docker run -d -p 5000:5000 --name my-python-app %DOCKER_IMAGE%
+                docker stop my-java-app || true
+                docker rm my-java-app || true
+                docker run -d -p 5000:5000 --name my-java-app %DOCKER_IMAGE%
                 '''
             }
         }
@@ -49,3 +42,4 @@ pipeline {
         }
     }
 }
+
