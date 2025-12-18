@@ -2,43 +2,35 @@ pipeline {
     agent any
 
     environment {
-        APP_NAME = "my-python-app"
-        DOCKER_IMAGE = "my-python-app:latest"
+        APP_NAME = "my-java-app"
+        DOCKER_IMAGE = "my-java-app:latest"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/<your-username>/my-python-app.git'
+                git branch: 'main', url: 'https://github.com/YOUR_USERNAME/YOUR_REPO.git'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Build with Maven') {
             steps {
-                sh 'python3 -m venv venv'
-                sh './venv/bin/pip install -r requirements.txt'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                sh './venv/bin/pytest test_app.py'
+                bat 'mvn clean package -DskipTests'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $DOCKER_IMAGE .'
+                bat 'docker build -t my-java-app:latest .'
             }
         }
 
         stage('Deploy') {
             steps {
-                // Example: running Docker container
-                sh '''
-                docker stop my-python-app || true
-                docker rm my-python-app || true
-                docker run -d -p 5000:5000 --name my-python-app $DOCKER_IMAGE
+                bat '''
+                docker stop my-java-app || true
+                docker rm my-java-app || true
+                docker run -d -p 5000:5000 --name my-java-app %DOCKER_IMAGE%
                 '''
             }
         }
